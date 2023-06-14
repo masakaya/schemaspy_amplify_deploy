@@ -25,8 +25,6 @@ jobs:
         run: docker ps -a
       - name: Show databases for root user
         run: mysql --protocol=tcp -h localhost -P 3306 -u root -proot -e "SHOW DATABASES"
-      - name: Show databases for user1
-        run: mysql --protocol=tcp -h localhost -P 3306 -u user1 -proot -e "SHOW DATABASES"
       - uses: actions/checkout@v2
       - uses: joshuaavalon/flyway-action@v3.0.0
         with:
