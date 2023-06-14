@@ -22,9 +22,11 @@ jobs:
           --health-retries 5
     steps:
       - uses: actions/checkout@v2
-      - name: Run migrate
-        run : >-
-          docker-compose up flyway-migrate
+      - uses: joshuaavalon/flyway-action@v3.0.0
+        with:
+          url: jdbc:mysql://db:3306/mydata?allowPublicKeyRetrieval=true&useSSL=false&passwordCharacterEncoding=UTF-8
+          user: root
+          password: P@ssw0rd
       - name: Show Docker containers
         run: docker ps -a
       - name: Show databases for root user
