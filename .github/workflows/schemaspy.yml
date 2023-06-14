@@ -24,13 +24,13 @@ jobs:
       - uses: actions/checkout@v2
       - uses: joshuaavalon/flyway-action@v3.0.0
         with:
-          url: jdbc:mysql://localhost:3306/mydata?allowPublicKeyRetrieval=true&useSSL=false&passwordCharacterEncoding=UTF-8
+          url: jdbc:mysql://localhost:3306/mydata
           user: root
-          password: P@ssw0rd
+          password: root
       - name: Show Docker containers
         run: docker ps -a
       - name: Show databases for root user
-        run: mysql --protocol=tcp -h localhost -P 3306 -u root -pP@ssw0rd -e "SHOW DATABASES"
+        run: mysql --protocol=tcp -h localhost -P 3306 -u root -proot -e "SHOW DATABASES"
       - name: Show databases for user1
-        run: mysql --protocol=tcp -h localhost -P 3306 -u user1 -pP@ssw0rd -e "SHOW DATABASES"
+        run: mysql --protocol=tcp -h localhost -P 3306 -u user1 -proot -e "SHOW DATABASES"
 
