@@ -1,0 +1,49 @@
+version: '3'
+
+x-template: &flyway-template
+  image: flyway/flyway:latest
+  volumes:
+    - ./ddl:/flyway/sql
+    - ./docker/flyway/conf:/flyway/conf
+  depends_on:
+    - db
+
+services:
+  db:
+    image: mysql/mysql-server:8.0
+    platform: linux/amd64   
+    ports:
+      - 3306:3306
+    volumes:
+      - ./docker/mysql/my.cnf:/etc/my.cnf
+      - test-volume:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      MYSQL_DATABASE: mydata
+      MYSQL_ROOT_PASSWORD: P@ssw0rd
+      MYSQL_USER: root 
+      MYSQL_PASSWORD: root
+  
+  # flyway 
+  flyway-baseline:
+    <<: *flyway-template
+    command: baseline 
+    profiles:
+      - extra 
+
+  flyway-migrate:
+    <<: *flyway-template
+    command: migrate
+
+  flyway-info:
+    <<: *flyway-template
+    command: info
+    profiles:
+      - extra
+    
+volumes:
+  test-volume:
