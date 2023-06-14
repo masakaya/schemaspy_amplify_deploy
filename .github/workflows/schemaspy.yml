@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: Show Docker containers
         run: docker ps -a
-      - name: Show databases for root user
+      - name: Show databases
         run: mysql --protocol=tcp -h localhost -P 3306 -u root -proot -e "SHOW DATABASES"
       - uses: actions/checkout@v2
       - uses: joshuaavalon/flyway-action@v3.0.0
@@ -32,3 +32,5 @@ jobs:
           user: root
           password: root
           filesystem: ./ddl
+      - name: Show table 
+        run: mysql --protocol=tcp -h localhost -P 3306 -u root -proot mydata -e "SHOW TABLES"
