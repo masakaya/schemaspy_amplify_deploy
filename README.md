@@ -1,0 +1,1 @@
+# schemaspy_amplify_deploy
