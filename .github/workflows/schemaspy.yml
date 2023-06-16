@@ -44,4 +44,4 @@ jobs:
           options: -v ./schemaspy.properties:/schemaspy.properties -v ./ddl:/output
           args: -visjs 
       - name: check
-        run : cat /output/index.html
+        run : ls ./ddl
