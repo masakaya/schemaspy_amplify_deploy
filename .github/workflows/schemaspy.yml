@@ -27,7 +27,7 @@ jobs:
         run: mysql --protocol=tcp -h localhost -P 3306 -u root -proot -e "SHOW DATABASES"
       - uses: actions/checkout@v3
       - name: Run Migration
-        run: docker compose -f docker-compose up flyway-migrate
+        run: docker compose -f docker-compose.yml up flyway-migrate
       # - uses: joshuaavalon/flyway-action@v3.0.0
       #   with:
       #     url: jdbc:mysql://db:3306/classicmodels?allowPublicKeyRetrieval=true&useSSL=false&passwordCharacterEncoding=UTF-8
@@ -36,5 +36,8 @@ jobs:
       #     locations: filesystem:./ddl
       - name: Show table 
         run: mysql --protocol=tcp -h localhost -P 3306 -u root -proot classicmodels -e "SHOW TABLES"
-              
+      # - name: schamespy
+      #   uses: docker://schemaspy/schemaspy:latest
+      #   with:
+            
     
