@@ -36,16 +36,13 @@ jobs:
           FLYWAY_LOCATIONS: filesystem:./ddl
         with:
           args: migrate
-      # - uses: joshuaavalon/flyway-action@v3.0.0
-      #   with:
-      #     url: jdbc:mysql://db:3306/classicmodels?allowPublicKeyRetrieval=true&useSSL=false&passwordCharacterEncoding=UTF-8
-      #     user: root
-      #     password: root
-      #     locations: filesystem:./ddl
       - name: Show table 
         run: mysql --protocol=tcp -h localhost -P 3306 -u root -proot classicmodels -e "SHOW TABLES"
-      # - name: schamespy
-      #   uses: docker://schemaspy/schemaspy:latest
-      #   with:
-            
-    
+      - name: schamespy
+        uses: docker://schemaspy/schemaspy:latest
+        env:
+          SCHAMESPY_OUTPUT: ./output
+        with:
+          options: -v ./schemaspy.properties:/schemaspy.properties
+      - name: check
+        run : cat ./output/index.html
