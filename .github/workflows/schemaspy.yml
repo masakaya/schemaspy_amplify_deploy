@@ -41,7 +41,7 @@ jobs:
       - name: schamespy
         uses: docker://schemaspy/schemaspy:latest
         with:
-          options: -v "/tmp:/output" -v "./schemaspy.properties:/schemaspy.properties"
+        #  options: -v "/tmp:/output" -v "./schemaspy.properties:/schemaspy.properties"
           args: -v "/tmp:/output" -vizjs 
       - name: check
         run : ls /tmp
