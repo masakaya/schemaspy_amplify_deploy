@@ -34,6 +34,8 @@ jobs:
           FLYWAY_USER: root
           FLYWAY_PASSWORD: root
           FLYWAY_LOCATIONS: filesystem:./ddl
+        with:
+          args: migrate
       # - uses: joshuaavalon/flyway-action@v3.0.0
       #   with:
       #     url: jdbc:mysql://db:3306/classicmodels?allowPublicKeyRetrieval=true&useSSL=false&passwordCharacterEncoding=UTF-8
