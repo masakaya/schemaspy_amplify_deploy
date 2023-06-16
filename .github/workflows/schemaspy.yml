@@ -31,6 +31,6 @@ jobs:
           url: jdbc:mysql://db:3306/classicmodels?allowPublicKeyRetrieval=true&useSSL=false&passwordCharacterEncoding=UTF-8
           user: root
           password: root
-          filesystem: ./ddl
+          locations: filesystem:./ddl
       - name: Show table 
         run: mysql --protocol=tcp -h localhost -P 3306 -u root -proot classicmodels -e "SHOW TABLES"
