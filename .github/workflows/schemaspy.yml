@@ -38,6 +38,8 @@ jobs:
           args: migrate
       - name: Show table 
         run: mysql --protocol=tcp -h localhost -P 3306 -u root -proot classicmodels -e "SHOW TABLES"
+      - name: Create dist
+        run: mkdir $(pwd)/dist
       - name: schamespy
         uses: docker://schemaspy/schemaspy:latest
         with:
