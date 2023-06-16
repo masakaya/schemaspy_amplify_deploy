@@ -42,6 +42,6 @@ jobs:
         uses: docker://schemaspy/schemaspy:latest
         with:
           options: -v ./schemaspy.properties:/schemaspy.properties -v ./ddl:/output
-          args: -visjs 
+          args: -vizjs 
       - name: check
         run : ls ./ddl
