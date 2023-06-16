@@ -40,9 +40,8 @@ jobs:
         run: mysql --protocol=tcp -h localhost -P 3306 -u root -proot classicmodels -e "SHOW TABLES"
       - name: schamespy
         uses: docker://schemaspy/schemaspy:latest
-        env:
-          SCHAMESPY_OUTPUT: ./output
         with:
-          options: -v ./schemaspy.properties:/schemaspy.properties
+          options: -v ./schemaspy.properties:/schemaspy.properties -v ./output:/output
+          args: -visjs 
       - name: check
         run : cat ./output/index.html
