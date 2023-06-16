@@ -25,12 +25,16 @@ jobs:
         run: docker ps -a
       - name: Show databases
         run: mysql --protocol=tcp -h localhost -P 3306 -u root -proot -e "SHOW DATABASES"
-      - uses: actions/checkout@v2
-      - uses: joshuaavalon/flyway-action@v3.0.0
-        with:
-          url: jdbc:mysql://db:3306/classicmodels?allowPublicKeyRetrieval=true&useSSL=false&passwordCharacterEncoding=UTF-8
-          user: root
-          password: root
-          locations: filesystem:./ddl
+      - uses: actions/checkout@v3
+      - name: Run Migration
+        run: docker compose -f docker-compose up flyway-migrate
+      # - uses: joshuaavalon/flyway-action@v3.0.0
+      #   with:
+      #     url: jdbc:mysql://db:3306/classicmodels?allowPublicKeyRetrieval=true&useSSL=false&passwordCharacterEncoding=UTF-8
+      #     user: root
+      #     password: root
+      #     locations: filesystem:./ddl
       - name: Show table 
         run: mysql --protocol=tcp -h localhost -P 3306 -u root -proot classicmodels -e "SHOW TABLES"
+              
+    
