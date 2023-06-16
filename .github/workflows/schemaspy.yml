@@ -42,6 +42,6 @@ jobs:
         uses: docker://schemaspy/schemaspy:latest
         with:
         #  options: -v "/tmp:/output" -v "./schemaspy.properties:/schemaspy.properties"
-          args: -v "$(PWD)/dist:/output" -vizjs 
+          args: -v "$(pwd)/dist:/output" -vizjs 
       - name: check
-        run : ls $(PWD)/dist
+        run : ls $(pwd)/dist
