@@ -50,6 +50,6 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
            image: schemaspy/schemaspy:latest
-           options: -v ${{ github.workspace }}/dist:/output -t mysql -host localhost -port 3306 -db classicmodels -u root -p root -vizjs
+           options: -v ${{ github.workspace }}/dist:/output -t mysql -port 3306 -db classicmodels -u root -p root -vizjs
       - name: check
         run : ls ${{ github.workspace }}/dist
