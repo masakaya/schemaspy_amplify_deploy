@@ -46,4 +46,4 @@ jobs:
         #  options: -v "/tmp:/output" -v "./schemaspy.properties:/schemaspy.properties"
           args: -v ${{ github.workspace }}/dist:/output -vizjs 
       - name: check
-        run : ls $(pwd)/dist
+        run : ls ${{ github.workspace }}/dist
