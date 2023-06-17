@@ -59,5 +59,6 @@ jobs:
           -e TZ=Asia/Tokyo \
           -v $${{ github.workspace }}/dist:/output \
           -v $PWD/schemaspy.properties:/schemaspy.properties \
+          schemaspy/schemaspy:latest
       - name: check
         run : ls ${{ github.workspace }}/dist
