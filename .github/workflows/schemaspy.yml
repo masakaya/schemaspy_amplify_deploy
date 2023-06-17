@@ -62,5 +62,6 @@ jobs:
           -v ${{ github.workspace }}/dist:/output \
           -v $PWD/schemaspy.properties:/schemaspy.properties \
           schemaspy/schemaspy:latest
+          -vizjs
       - name: check
         run : ls ${{ github.workspace }}/dist
