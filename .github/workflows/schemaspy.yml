@@ -57,7 +57,7 @@ jobs:
           --rm \
           --net=${{ job.container.network }} \
           -e TZ=Asia/Tokyo \
-          -v $${{ github.workspace }}/dist:/output \
+          -v ${{ github.workspace }}/dist:/output \
           -v $PWD/schemaspy.properties:/schemaspy.properties \
           schemaspy/schemaspy:latest
       - name: check
