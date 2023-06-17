@@ -40,11 +40,16 @@ jobs:
         run: mysql --protocol=tcp -h localhost -P 3306 -u root -proot classicmodels -e "SHOW TABLES"
       - name: Create dist
         run: mkdir $(pwd)/dist
+      # - name: schamespy
+      #   uses: docker://schemaspy/schemaspy:latest
+      #   with:
+      #     #options: -v "/tmp:/output" -v "./schemaspy.properties:/schemaspy.properties"
+      #     options: -v ${{ github.workspace }}/dist:/output
+      #     args: -v ${{ github.workspace }}/dist:/output -vizjs 
       - name: schamespy
-        uses: docker://schemaspy/schemaspy:latest
+        uses: addnab/docker-run-action@v3
         with:
-          #options: -v "/tmp:/output" -v "./schemaspy.properties:/schemaspy.properties"
-          options: -v ${{ github.workspace }}/dist:/output
-          args: -v ${{ github.workspace }}/dist:/output -vizjs 
+           image: schemaspy/schemaspy:latest
+           options: -v ${{ github.workspace }}/dist:/output -t mysql -host localhost -port 3306 -db classicmodels -u root -p root -vizjs
       - name: check
         run : ls ${{ github.workspace }}/dist
