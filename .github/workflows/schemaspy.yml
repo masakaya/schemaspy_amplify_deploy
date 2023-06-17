@@ -40,24 +40,24 @@ jobs:
         run: mysql --protocol=tcp -h localhost -P 3306 -u root -proot classicmodels -e "SHOW TABLES"
       - name: Create dist
         run: mkdir $(pwd)/dist
-      - name: schamespy
-        uses: docker://schemaspy/schemaspy:latest
-        with:
-          #options: -v "/tmp:/output" -v "./schemaspy.properties:/schemaspy.properties"
-          options: -v ${{ github.workspace }}/dist:/output
-          args: --net=${{ job.container.network }} -v $PWD/.gitignore:/schemaspy.properties -v ${{ github.workspace }}/dist:/output -vizjs 
+      # - name: schamespy
+      #   uses: docker://schemaspy/schemaspy:latest
+      #   with:
+      #     #options: -v "/tmp:/output" -v "./schemaspy.properties:/schemaspy.properties"
+      #     options: -v ${{ github.workspace }}/dist:/output
+      #     args: --net=${{ job.container.network }} -v $PWD/.gitignore:/schemaspy.properties -v ${{ github.workspace }}/dist:/output -vizjs 
       # - name: schamespy
       #   uses: addnab/docker-run-action@v3
       #   with:
       #      image: schemaspy/schemaspy:latest
       #      options: -v ${{ github.workspace }}/dist:/output -t mysql -port 3306 -db classicmodels -u root -p root -vizjs
-      #- name: Run SchemaSpy
-      #  run: |
-          # docker run \
-          # --rm \
-          # --net=${{ job.container.network }} \
-          # -e TZ=Asia/Tokyo \
-          # -v ${{ env.SCHEMA_TMP_DIR }}:/output \
-          # -v $PWD/config/schemaspy.properties:/schemaspy.properties \
+      - name: Run SchemaSpy
+        run: |
+          docker run \
+          --rm \
+          --net=${{ job.container.network }} \
+          -e TZ=Asia/Tokyo \
+          -v $${{ github.workspace }}/dist:/output \
+          -v $PWD/schemaspy.properties:/schemaspy.properties \
       - name: check
         run : ls ${{ github.workspace }}/dist
