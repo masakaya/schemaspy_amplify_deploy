@@ -45,7 +45,7 @@ jobs:
         with:
           #options: -v "/tmp:/output" -v "./schemaspy.properties:/schemaspy.properties"
           options: -v ${{ github.workspace }}/dist:/output
-          args: --net=${{ job.container.network }} -v $PWD/schemaspy.properties:/schemaspy.properties -v ${{ github.workspace }}/dist:/output -vizjs 
+          args: --net=${{ job.container.network }} -v $PWD/.gitignore:/schemaspy.properties -v ${{ github.workspace }}/dist:/output -vizjs 
       # - name: schamespy
       #   uses: addnab/docker-run-action@v3
       #   with:
