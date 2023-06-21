@@ -1,10 +1,10 @@
-name: schemaspy_sample
+name: Schemaspy
 on:
   - workflow_dispatch
   - push
 
 jobs:
-  run-mysql-8_0:
+  Run_Schemaspy:
     runs-on: ubuntu-20.04
     services:
       db:
@@ -42,17 +42,6 @@ jobs:
         run: | 
           sudo mkdir $(pwd)/dist
           sudo chmod 777 $(pwd)/dist
-      # - name: schamespy
-      #   uses: docker://schemaspy/schemaspy:latest
-      #   with:
-      #     #options: -v "/tmp:/output" -v "./schemaspy.properties:/schemaspy.properties"
-      #     options: -v ${{ github.workspace }}/dist:/output
-      #     args: --net=${{ job.container.network }} -v $PWD/.gitignore:/schemaspy.properties -v ${{ github.workspace }}/dist:/output -vizjs 
-      # - name: schamespy
-      #   uses: addnab/docker-run-action@v3
-      #   with:
-      #      image: schemaspy/schemaspy:latest
-      #      options: -v ${{ github.workspace }}/dist:/output -t mysql -port 3306 -db classicmodels -u root -p root -vizjs
       - name: Run SchemaSpy
         run: |
           docker run \
