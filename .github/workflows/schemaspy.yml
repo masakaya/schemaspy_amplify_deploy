@@ -4,7 +4,7 @@ on:
   - push
 
 jobs:
-  Run_Schemaspy:
+  schemaspy:
     runs-on: ubuntu-20.04
     services:
       db:
@@ -57,7 +57,7 @@ jobs:
       - name: zip arcive
         uses: montudor/action-zip@v1
         with:
-            args: zip -qq archive.zip ${{ github.workspace }}/dist
+            args: zip -qq -r archive.zip dist
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
@@ -65,6 +65,7 @@ jobs:
           path: archive.zip
   deploy:
     runs-on: ubuntu-20.04
+    needs: schemaspy 
     steps:
       - name: Download Artifact
         uses: actions/download-artifact@v3
