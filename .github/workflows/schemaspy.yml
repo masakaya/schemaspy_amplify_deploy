@@ -54,3 +54,24 @@ jobs:
           -vizjs
       - name: check
         run : ls ${{ github.workspace }}/dist
+      - name: zip arcive
+        uses: montudor/action-zip@v1
+        with:
+            args: zip -qq archive.zip ${{ github.workspace }}/dist
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: schemaspy-artifact
+          path: archive.zip
+  deploy:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: schemaspy-artifact
+          path: /var/tmp/
+      - name: check
+        run : ls /var/tmp/*.zip
+      
+
