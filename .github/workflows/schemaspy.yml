@@ -84,7 +84,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: schemaspy-artifact
-          path: /var/tmp/
+          path: /tmp/
       - name: Get branch tname
         id: branch-name
         uses: tj-actions/branch-names@v7
@@ -95,23 +95,49 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::121936954111:role/github-actions
           aws-region: ap-northeast-1
-      - name: create amplify deployment ( default )
-        if: steps.branch-name.outputs.is_default == 'true'
+
+      - name: Get branch
+        id : amplify_branch_name 
         run : |
-          aws amplify get-branch --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name main \
-           || aws amplify create-branch --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name main
-          aws amplify create-deployment --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name main | tee deployment.json
-      - name: create amplify deployment ( pull request )
-        if: steps.branch-name.outputs.is_tag == 'false' && steps.branch-name.outputs.is_default == 'false'
+          if [ ${{ steps.branch-name.outputs.is_default }} == 'true' ]; then 
+             echo "branch-name=main" >> $GITHUB_OUTPUT
+          elif [ ${{ steps.branch-name.outputs.is_tag }} == 'false' && ${{ steps.branch-name.outputs.is_default }}  == 'false ]; then 
+             echo "branch-name=${{ steps.branch-name.outputs.current_branch }}" >> $GITHUB_OUTPUT
+          else 
+             echo "branch-name=${{ steps.branch-name.outputs.tag }}" >> $GITHUB_OUTPUT
+
+      # - name: create amplify deployment ( default )
+      #   if: steps.branch-name.outputs.is_default == 'true'
+      #   run : |
+      #     aws amplify get-branch --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name main \
+      #      || aws amplify create-branch --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name main
+      #     aws amplify create-deployment --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name main | tee deployment.json
+      # - name: create amplify deployment ( pull request )
+      #   if: steps.branch-name.outputs.is_tag == 'false' && steps.branch-name.outputs.is_default == 'false'
+      #   run : |
+      #     aws amplify get-branch --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ steps.branch-name.outputs.current_branch }} \
+      #       || aws amplify create-branch --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ steps.branch-name.outputs.current_branch }} \
+      #     aws amplify create-deployment --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ steps.branch-name.outputs.current_branch }} | tee deployment.json
+      # - name: create amplify deployment ( tags )
+      #   if: steps.branch-name.outputs.is_tag == 'true'
+      #   run : |
+      #     aws amplify get-branch --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ steps.branch-name.outputs.tag }} \
+      #       || aws amplify create-branch --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ steps.branch-name.outputs.tag }} \
+      #     aws amplify create-deployment --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ steps.branch-name.outputs.tag }} | tee deployment.json
+      - name : Deploy amplify 
+        env :
+          BRANCH_NAME : ${{ steps.amplify_branch_name.outputs.branch_name }}
         run : |
-          aws amplify get-branch --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ steps.branch-name.outputs.current_branch }} \
-            || aws amplify create-branch --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ steps.branch-name.outputs.current_branch }} \
-          aws amplify create-deployment --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ steps.branch-name.outputs.current_branch }} | tee deployment.json
-      - name: create amplify deployment ( tags )
-        if: steps.branch-name.outputs.is_tag == 'true'
-        run : |
-          aws amplify get-branch --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ steps.branch-name.outputs.tag }} \
-            || aws amplify create-branch --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ steps.branch-name.outputs.tag }} \
-          aws amplify create-deployment --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ steps.branch-name.outputs.tag }} | tee deployment.json
-      - name : debug deployment.json
-        run : cat deployment.json
+           aws amplify get-branch --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} \
+             || aws amplify create-branch --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} \
+           aws amplify create-deployment --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} | tee deployment.json
+           UPLOAD_URL=$(jq -r .zipUploadUrl < deployment.json)
+           JOB_ID=$(jq -r .jobId < deployment.json)
+           curl -X PUT $UPLOAD_URL --data-binary @/tmp/archive.zip
+
+           # Waiting deploy
+           while [[ "$(aws amplify get-job --app-id  ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} --job-id $JOB_ID | jq -r '.job.summary.status')" =~ ^(PENDING|RUNNING)$ ]]; do sleep 1; done
+           BRANCH_DISPLAY_NAME=$(aws amplify get-branch --app-id $APP_ID --branch-name $BRANCH | jq -r .branch.displayName)
+           DEFAULT_DOMAIN=$(aws amplify get-app --app-id $APP_ID  | jq -r .app.defaultDomain)
+           URL="https://${BRANCH_DISPLAY_NAME}.${DEFAULT_DOMAIN}/"
+           echo "URL: $URL"
