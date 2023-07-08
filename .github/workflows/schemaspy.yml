@@ -103,7 +103,7 @@ jobs:
              echo "branch-name=${{ steps.branch-name.outputs.current_branch }}" >> $GITHUB_OUTPUT
           else 
              echo "branch-name=${{ steps.branch-name.outputs.tag }}" >> $GITHUB_OUTPUT
-
+          fi
       # - name: create amplify deployment ( default )
       #   if: steps.branch-name.outputs.is_default == 'true'
       #   run : |
