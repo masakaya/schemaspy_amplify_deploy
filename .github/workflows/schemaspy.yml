@@ -67,7 +67,7 @@ jobs:
       - name: zip arcive
         uses: montudor/action-zip@v1
         with:
-            args: zip -qq -r archive.zip dist
+            args: zip -r archive.zip ./dist/
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
@@ -140,7 +140,6 @@ jobs:
            aws amplify start-deployment --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} --job-id $JOB_ID
            # Waiting deploy
            while [[ "$(aws amplify get-job --app-id  ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} --job-id $JOB_ID | jq -r '.job.summary.status')" =~ ^(PENDING|RUNNING)$ ]]; do 
-              aws amplify get-job --app-id  ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} --job-id $JOB_ID
               echo "On Progress."
               sleep 1
            done
