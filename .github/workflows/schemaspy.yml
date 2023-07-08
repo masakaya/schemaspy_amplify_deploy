@@ -72,7 +72,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: schemaspy-artifact
-          path: archive.zip
+          path: dist
   deploy:
     runs-on: ubuntu-20.04
     needs: schemaspy
