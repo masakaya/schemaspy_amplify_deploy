@@ -133,8 +133,13 @@ jobs:
            aws amplify create-deployment --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} > deployment.json
            UPLOAD_URL=$(jq -r .zipUploadUrl < deployment.json)
            JOB_ID=$(jq -r .jobId < deployment.json)
+
+           ls ${{ runner.temp }}/archive.zip
+           echo $UPLOAD_URL
+
            curl -X PUT $UPLOAD_URL --data-binary @${{ runner.temp }}/archive.zip
            aws amplify get-job --app-id  ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} --job-id $JOB_ID
+           sleep 10
            # Waiting deploy
            while [[ "$(aws amplify get-job --app-id  ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} --job-id $JOB_ID | jq -r '.job.summary.status')" =~ ^(PENDING|RUNNING)$ ]]; do 
               cat deployment.json
