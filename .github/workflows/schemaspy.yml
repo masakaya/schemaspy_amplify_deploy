@@ -2,7 +2,14 @@ name: Schemaspy
 on:
   - workflow_dispatch
   - push
-
+env:
+  # use a secret key if necessary
+  BRANCH_NAME : main
+  MYSQL_DATABASE : classicmodels
+  MYSQL_ROOT_PASSWORD : P@ssw0rd
+  MYSQL_USER : root
+  MYSQL_PASSWORD : root
+  MYSQL_PORT : 3306
 jobs:
   schemaspy:
     runs-on: ubuntu-20.04
@@ -12,10 +19,10 @@ jobs:
         ports:
           - 3306:3306
         env:
-          MYSQL_DATABASE: classicmodels
-          MYSQL_ROOT_PASSWORD: P@ssw0rd
-          MYSQL_USER: root 
-          MYSQL_PASSWORD: root
+          MYSQL_DATABASE: ${{ env.MYSQL_DATABASE }} 
+          MYSQL_ROOT_PASSWORD: ${{ env.MYSQL_ROOT_PASSWORD }} 
+          MYSQL_USER:  ${{ env.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ env.MYSQL_PASSWORD }}
         options: >-
           --health-cmd "mysqladmin ping"
           --health-interval 10s
@@ -25,19 +32,19 @@ jobs:
       - name: Show Docker containers
         run: docker ps -a
       - name: Show databases
-        run: mysql --protocol=tcp -h localhost -P 3306 -u root -proot -e "SHOW DATABASES"
+        run: mysql --protocol=tcp -h localhost -P ${{ env.MYSQL_PORT }} -u ${{ env.MYSQL_USER }} -p${{ env.MYSQL_PASSWORD }} -e "SHOW DATABASES"
       - uses: actions/checkout@v3
       - name: Run Migration
         uses: docker://flyway/flyway:9
         env:
-          FLYWAY_URL: jdbc:mysql://db:3306/classicmodels?allowPublicKeyRetrieval=true&useSSL=false&passwordCharacterEncoding=UTF-8
-          FLYWAY_USER: root
-          FLYWAY_PASSWORD: root
+          FLYWAY_URL: jdbc:mysql://db:${{env.MYSQL_PORT}}/${{env.MYSQL_DATABASE}}?allowPublicKeyRetrieval=true&useSSL=false&passwordCharacterEncoding=UTF-8
+          FLYWAY_USER: ${{ env.MYSQL_USER }}
+          FLYWAY_PASSWORD: ${{ env.MYSQL_PASSWORD}}
           FLYWAY_LOCATIONS: filesystem:./ddl
         with:
           args: migrate
       - name: Show table 
-        run: mysql --protocol=tcp -h localhost -P 3306 -u root -proot classicmodels -e "SHOW TABLES"
+        run: mysql --protocol=tcp -h localhost -P ${{env.MYSQL_PORT}} -u ${{env.MYSQL_USER }} -p${{env.MYSQL_PASSWORD }} ${{ env.MYSQL_DATABASE }} -e "SHOW TABLES"
       - name: Create dist
         run: | 
           sudo mkdir $(pwd)/dist
@@ -82,5 +89,5 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::121936954111:role/github-actions
           aws-region: ap-northeast-1
-      - name: 
-        run : aws s3 ls
+      - name: deploy amplify 
+        run : aws amplify
