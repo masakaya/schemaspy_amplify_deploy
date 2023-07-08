@@ -85,6 +85,8 @@ jobs:
         with:
           name: schemaspy-artifact
           path: ${{ runner.temp }}
+      - name: Check 
+        run: ls ${{ runner.temp }}
       - name: Unzip artifact
         uses: montudor/action-zip@v1
         with:
