@@ -87,10 +87,6 @@ jobs:
           path: ${{ runner.temp }}
       - name: Check 
         run: ls ${{ runner.temp }}
-      - name: Unzip artifact
-        uses: montudor/action-zip@v1
-        with:
-          args: unzip ${{ runner.temp }}/schemaspy-artifact.zip -d ${{ github.workspace }}  
       - name: Get branch tname
         id: branch-name
         uses: tj-actions/branch-names@v7
@@ -138,8 +134,7 @@ jobs:
            cat deployment.json
            UPLOAD_URL=$(jq -r .zipUploadUrl < deployment.json)
            JOB_ID=$(jq -r .jobId < deployment.json)
-           curl -X PUT $UPLOAD_URL --data-binary @${{ github.workspace }}/archive.zip
-
+           curl -X PUT $UPLOAD_URL --data-binary @${{ runner.temp }}/archive.zip
            # Waiting deploy
            while [[ "$(aws amplify get-job --app-id  ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} --job-id $JOB_ID | jq -r '.job.summary.status')" =~ ^(PENDING|RUNNING)$ ]]; do sleep 1; done
            BRANCH_DISPLAY_NAME=$(aws amplify get-branch --app-id $APP_ID --branch-name $BRANCH | jq -r .branch.displayName)
