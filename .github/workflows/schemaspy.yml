@@ -88,8 +88,6 @@ jobs:
       - name: Get branch tname
         id: branch-name
         uses: tj-actions/branch-names@v7
-      - name: check
-        run : ls /var/tmp/*.zip
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
