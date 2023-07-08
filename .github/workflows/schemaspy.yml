@@ -134,10 +134,16 @@ jobs:
            cat deployment.json
            UPLOAD_URL=$(jq -r .zipUploadUrl < deployment.json)
            JOB_ID=$(jq -r .jobId < deployment.json)
+           echo "Job id : $JOB_ID"
            curl -X PUT $UPLOAD_URL --data-binary @${{ runner.temp }}/archive.zip
+          
+           aws amplify get-job --app-id  ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} --job-id $JOB_ID
            # Waiting deploy
-           while [[ "$(aws amplify get-job --app-id  ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} --job-id $JOB_ID | jq -r '.job.summary.status')" =~ ^(PENDING|RUNNING)$ ]]; do sleep 1; done
-           BRANCH_DISPLAY_NAME=$(aws amplify get-branch --app-id $APP_ID --branch-name $BRANCH | jq -r .branch.displayName)
-           DEFAULT_DOMAIN=$(aws amplify get-app --app-id $APP_ID  | jq -r .app.defaultDomain)
+           while [[ "$(aws amplify get-job --app-id  ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} --job-id $JOB_ID | jq -r '.job.summary.status')" =~ ^(PENDING|RUNNING)$ ]]; do 
+              echo "On Progress."
+              sleep 1
+           done
+           BRANCH_DISPLAY_NAME=$(aws amplify get-branch --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} | jq -r .branch.displayName)
+           DEFAULT_DOMAIN=$(aws amplify get-app --app-id ${{ env.AMPLIFY_APP_ID }} | jq -r .app.defaultDomain)
            URL="https://${BRANCH_DISPLAY_NAME}.${DEFAULT_DOMAIN}/"
            echo "URL: $URL"
