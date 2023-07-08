@@ -84,7 +84,11 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: schemaspy-artifact
-          path: /tmp/
+          path: ${{ runner.temp }}
+      - name: Unzip artifact
+        uses: montudor/action-zip@v1
+        with:
+          args: unzip ${{ runner.temp }}/schemaspy-artifact.zip -d ${{ github.workspace }}  
       - name: Get branch tname
         id: branch-name
         uses: tj-actions/branch-names@v7
@@ -127,12 +131,12 @@ jobs:
           BRANCH_NAME : ${{ steps.amplify_branch_name.outputs.branch-name }}
         run : |
            aws amplify get-branch --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} \
-             || aws amplify create-branch --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} \
+             || aws amplify create-branch --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} 
            aws amplify create-deployment --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} > deployment.json
            cat deployment.json
            UPLOAD_URL=$(jq -r .zipUploadUrl < deployment.json)
            JOB_ID=$(jq -r .jobId < deployment.json)
-           curl -X PUT $UPLOAD_URL --data-binary @/tmp/archive.zip
+           curl -X PUT $UPLOAD_URL --data-binary @${{ github.workspace }}/archive.zip
 
            # Waiting deploy
            while [[ "$(aws amplify get-job --app-id  ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} --job-id $JOB_ID | jq -r '.job.summary.status')" =~ ^(PENDING|RUNNING)$ ]]; do sleep 1; done
