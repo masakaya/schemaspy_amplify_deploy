@@ -136,9 +136,11 @@ jobs:
 
            ls ${{ runner.temp }}/archive.zip
            echo $UPLOAD_URL
-           curl -X PUT --header "Content-Type:application/octet-stream" --upload-file @${{ runner.temp }}/archive.zip $UPLOAD_URL 
+
+           curl -X PUT $UPLOAD_URL --data-binary @${{ runner.temp }}/archive.zip 
 
            aws amplify start-deployment --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} --job-id $JOB_ID
+           # Waiting deploy
            while [[ "$(aws amplify get-job --app-id  ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} --job-id $JOB_ID | jq -r '.job.summary.status')" =~ ^(PENDING|RUNNING)$ ]]; do 
               cat deployment.json
               echo "Job id : $JOB_ID"
