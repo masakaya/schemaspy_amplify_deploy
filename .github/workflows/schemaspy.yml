@@ -97,9 +97,9 @@ jobs:
       - name: Get branch
         id : amplify_branch_name 
         run : |
-          if [ ${{ steps.branch-name.outputs.is_default }} == 'true' ]; then 
+          if [ "${{ steps.branch-name.outputs.is_default }}" == "true" ]; then 
              echo "branch-name=main" >> $GITHUB_OUTPUT
-          elif [ ${{ steps.branch-name.outputs.is_tag }} == 'false' && ${{ steps.branch-name.outputs.is_default }}  == 'false ]; then 
+          elif [ "${{ steps.branch-name.outputs.is_tag }}" == "false" && "${{ steps.branch-name.outputs.is_default }}" == "false" ]; then 
              echo "branch-name=${{ steps.branch-name.outputs.current_branch }}" >> $GITHUB_OUTPUT
           else 
              echo "branch-name=${{ steps.branch-name.outputs.tag }}" >> $GITHUB_OUTPUT
