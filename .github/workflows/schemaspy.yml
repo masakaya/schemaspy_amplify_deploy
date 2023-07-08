@@ -65,7 +65,10 @@ jobs:
           path: archive.zip
   deploy:
     runs-on: ubuntu-20.04
-    needs: schemaspy 
+    needs: schemaspy
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - name: Download Artifact
         uses: actions/download-artifact@v3
@@ -74,5 +77,10 @@ jobs:
           path: /var/tmp/
       - name: check
         run : ls /var/tmp/*.zip
-      
-
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::121936954111:role/github-actions
+          aws-region: ap-northeast-1
+      - name: 
+        run : aws s3 ls
