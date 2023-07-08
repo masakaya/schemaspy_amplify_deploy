@@ -131,15 +131,15 @@ jobs:
            aws amplify get-branch --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} \
              || aws amplify create-branch --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} 
            aws amplify create-deployment --app-id ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} > deployment.json
-           cat deployment.json
            UPLOAD_URL=$(jq -r .zipUploadUrl < deployment.json)
            JOB_ID=$(jq -r .jobId < deployment.json)
-           echo "Job id : $JOB_ID"
            curl -X PUT $UPLOAD_URL --data-binary @${{ runner.temp }}/archive.zip
-          
            aws amplify get-job --app-id  ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} --job-id $JOB_ID
            # Waiting deploy
            while [[ "$(aws amplify get-job --app-id  ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} --job-id $JOB_ID | jq -r '.job.summary.status')" =~ ^(PENDING|RUNNING)$ ]]; do 
+              cat deployment.json
+              echo "Job id : $JOB_ID"
+              aws amplify get-job --app-id  ${{ env.AMPLIFY_APP_ID }} --branch-name ${{ env.BRANCH_NAME }} --job-id $JOB_ID
               echo "On Progress."
               sleep 1
            done
