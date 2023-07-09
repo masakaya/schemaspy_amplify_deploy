@@ -64,10 +64,11 @@ jobs:
           -vizjs
       - name: check
         run : ls ${{ github.workspace }}/dist
-      - name: zip arcive
+      - name: zip install
         uses: montudor/action-zip@v1
-        with:
-            args: zip -rj archive.zip dist
+      - name: zip archive
+        run: zip -r archive.zip *
+        working-directory: ${{ github.workspace }}/dist
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
@@ -95,7 +96,6 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::121936954111:role/github-actions
           aws-region: ap-northeast-1
-
       - name: Get branch
         id : amplify_branch_name 
         run : |
